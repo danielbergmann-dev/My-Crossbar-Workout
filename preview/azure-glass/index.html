@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#edf4ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Crossbar Coach">
+<title>Crossbar · Azure Glass Test</title>
+<link rel="stylesheet" href="app.css?v=35">
+<link rel="stylesheet" href="azure.css?v=1">
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="brand">CROSSBAR COACH · 3.6</div>
+  <h1>Dein Gym.<br>Dein Plan.</h1>
+  <p class="muted">8 Wochen Muskelaufbau mit deinem Crossbar Ultimate Set – Technik, Progression und Regeneration.</p>
+  <div class="chips"><span class="chip">♂ 48 Jahre</span><span class="chip">83 kg</span><span class="chip" id="levelChip">Fortgeschritten · Crossbar neu</span><span class="chip" id="dayChip">3× Kraft/Woche</span><span class="chip">Ziel: Muskelaufbau</span></div>
+</header>
+
+<section id="home" class="section active">
+  <div class="grid two">
+    <div class="card"><div class="kicker">Heute</div><div class="big" id="todayTitle"></div><p class="muted" id="todayText"></p><div class="actions"><button class="btn" id="todayBtn">Training</button><button class="btn s" onclick="openSettings()">⚙ Einstellungen</button><button class="btn s" onclick="openTimer(90)">⏱ 90 s</button></div></div>
+    <div class="card"><div class="kicker">Woche <span id="wn">1</span>/8</div><div class="big" id="phaseName"></div><p class="muted" id="phaseText"></p><div class="progress"><span id="wp"></span></div><div class="meta" id="wpt"></div></div>
+  </div>
+  <div class="grid three" style="margin-top:12px"><div class="stat"><span class="muted">Einheiten</span><b id="st1">0</b></div><div class="stat"><span class="muted">Minuten</span><b id="st2">0</b></div><div class="stat"><span class="muted">PRs</span><b id="st3">0</b></div></div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Regenerationscheck</div><h2>Wie bereit bist du?</h2><div class="grid three"><div class="range"><b>Energie <span id="ev">3</span>/5</b><input id="energy" type="range" min="1" max="5" value="3"></div><div class="range"><b>Schlaf <span id="sv">3</span>/5</b><input id="sleep" type="range" min="1" max="5" value="3"></div><div class="range"><b>Muskelkater <span id="mv">3</span>/5</b><input id="sore" type="range" min="1" max="5" value="3"></div></div><div id="ready" class="call"></div></div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Trainingsphase</div><h2>8‑Wochen‑Plan</h2><div class="weekbar" id="weeks"></div><div class="call" id="weekAdvice"></div></div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Deine Roadmap</div><h2>A ↔ B – automatisch</h2><p class="muted">Nach jeder gespeicherten Einheit schlägt die App automatisch das andere Workout vor.</p><div id="roadNow" class="call ok"></div><div class="route" id="roadWeek"></div><div class="phaseRoad" id="phaseRoad"></div><div class="allWeeks" id="allWeeks"></div></div>
+  <div class="card call ok" style="margin-top:12px"><div class="kicker">Nächster Schritt</div><h2 id="nextRec">Noch keine Trainingsdaten</h2><p class="muted" id="nextRecText"></p></div>
+</section>
+
+<section id="training" class="section">
+  <div class="card"><div class="kicker">Training</div><h2>Workout A / B</h2><p class="muted">Die Varianten sind jetzt exakt benannt. Du kannst auch Bandkombinationen wie Grün + Weiß erfassen. Vollständig erledigte Übungen werden grün markiert.</p><div class="actions"><button class="btn" onclick="showWorkout(nextWorkout())">Nächstes Workout öffnen</button><button class="btn s" onclick="showWorkout('A')">A ansehen</button><button class="btn s" onclick="showWorkout('B')">B ansehen</button><button class="btn s" onclick="openSettings()">⚙ Einstellungen</button></div></div>
+  <div id="workA"></div><div id="workB" style="display:none"></div>
+</section>
+
+<section id="library" class="section">
+  <div class="card"><div class="kicker">Übungen</div><h2>Technik-Bibliothek</h2><p class="muted">Jede Übung mit exakter Variante, Aufbau, Ausführung, Fehlern und Link zum offiziellen Crossbar-Übungsbereich.</p></div>
+  <div id="lib"></div>
+</section>
+
+<section id="progress" class="section">
+  <div class="card aiCard"><div class="kicker">Auswertung</div><h2>🤖 Bericht für ChatGPT</h2><p>Erstellt eine kompakte Auswertungsdatei mit Bandkombinationen, Wiederholungen, RIR, PRs und Regeneration.</p><p class="muted">Empfohlen nach Einheit 3 sowie nach Woche 2, 4, 6 und 8.</p><div class="actions"><button class="btn ai" onclick="chatgptReport()">🤖 Auswertung für ChatGPT erstellen</button></div><div class="call" id="reportHint"></div></div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Bestleistungen</div><h2>PRs</h2><div id="prs" class="log"></div></div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Trainingstagebuch</div><h2>Verlauf</h2><div class="actions"><button class="btn s" onclick="backup()">⬇ Backup</button><button class="btn s" onclick="document.getElementById('imp').click()">⬆ Import</button><button class="btn danger" onclick="resetAll()">↺ Alles zurücksetzen</button><input id="imp" type="file" accept=".json" hidden></div><div id="log" class="log" style="margin-top:10px"></div></div>
+</section>
+
+<section id="wissen" class="section">
+  <div class="grid two">
+    <div class="card"><div class="kicker">RIR</div><h2>Reps in Reserve</h2><p><b>RIR 2</b> bedeutet: ungefähr zwei saubere Wiederholungen wären noch gegangen. Für dich meist 1–2 RIR, bei neuen Crossbar-Bewegungen anfangs eher 2–3.</p></div>
+    <div class="card"><div class="kicker">Bandwerte</div><h2>4,5 kg = je Seite</h2><p>Der Aufdruck bezieht sich auf eine Seite. Bei symmetrischer Nutzung sind 4,5 kg je Seite nominal ungefähr 9 kg insgesamt.</p><p class="muted">Bandwiderstand ist nicht 1:1 mit Hantelgewicht vergleichbar, weil die Spannung mit der Dehnung steigt.</p></div>
+  </div>
+  <div class="card" style="margin-top:12px"><div class="kicker">Nennwerte je Seite</div><h2>Deine Bänder</h2><p>Weiß ≈ 4,5 kg · Rot ≈ 6,8 kg · Grün ≈ 11–11,3 kg · Blau ≈ 22,5 kg. Kombinationen addieren sich, z. B. Grün + Weiß ≈ 15,5–15,8 kg je Seite.</p></div>
+</section>
+</div>
+
+<nav class="nav"><button class="on" data-tab="home">⌂ Start</button><button data-tab="training">▶ Training</button><button data-tab="library">▦ Übungen</button><button data-tab="progress">↗ Verlauf</button><button data-tab="wissen">i Wissen</button></nav>
+
+<div class="modal" id="timer"><div class="box"><div class="kicker">Satzpause</div><div class="clock" id="clock">01:30</div><div class="actions" style="justify-content:center"><button class="btn s" onclick="remaining+=30;tick()">+30 s</button><button class="btn" onclick="closeTimer()">Fertig</button></div></div></div>
+
+<div class="modal" id="settings"><div class="box"><div class="kicker">Einstellungen</div><h2>Profil, Trainingstage & Daten</h2><div class="settingsrow"><b>Trainingsniveau</b><p class="muted">Standard: krafttrainingserfahren, aber neu an der Crossbar.</p><div class="levelbox"><label><input type="radio" name="level" value="beginner"> Einsteiger</label><label><input type="radio" name="level" value="advanced"> Fortgeschritten</label></div></div><div class="settingsrow"><b>Geplante Trainingstage</b><div class="daypick" id="dayPick"></div><button class="btn" onclick="saveSettings()">Einstellungen speichern</button></div><div class="settingsrow"><b>Trainingsdaten sichern</b><div class="actions"><button class="btn s" onclick="backup()">⬇ Backup</button><button class="btn s" onclick="document.getElementById('imp').click()">⬆ Import</button></div></div><div class="settingsrow"><b>Komplett neu starten</b><p class="muted">Löscht Trainingsdaten, behält aber Profil und Trainingstage.</p><button class="btn danger" onclick="resetAll()">↺ Alle Trainingsdaten löschen</button></div><div class="actions" style="margin-top:14px"><button class="btn s" onclick="closeSettings()">Schließen</button></div></div></div>
+
+<div class="modal" id="finishModal"><div class="box"><div class="kicker">Einheit abschließen</div><h2 id="finishTitle">Workout</h2><label>Wie fühlst du dich? <b id="feelVal">3</b>/5</label><input id="feelInput" type="range" min="1" max="5" value="3" style="width:100%;accent-color:var(--a)"><label style="display:block;margin-top:12px">Trainingsdauer (Minuten)</label><input id="durationInput" class="field" type="number" min="1" max="240" value="60"><div class="actions" style="margin-top:14px"><button class="btn ok" onclick="confirmFinish()">✓ Speichern</button><button class="btn s" onclick="closeFinish()">Abbrechen</button></div></div></div>
+
+<script src="app.js?v=36"></script>
+<script src="schedule-fix.js?v=36"></script>
+<script src="azure.js?v=1"></script>
+</body>
+</html>
